@@ -2,18 +2,18 @@
 
 import React, { useState, useEffect } from "react"
 import { useSearchParams } from "next/navigation"
-import { Card } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Alert } from "@/components/ui/alert"
+import { Card } from "../../components/ui/card"
+import { Button } from "../../components/ui/button"
+import { Input } from "../../components/ui/input"
+import { Label } from "../../components/ui/label"
+import { Alert } from "../../components/ui/alert"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "../../components/ui/select"
 
 const parkingZones = {
   "1": { name: "Zone A", type: "VIP", pricePerHour: 30 },
@@ -39,10 +39,7 @@ export default function ReservationPage() {
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null)
   const [nearestSpot, setNearestSpot] = useState<string | null>(null)
   const [alertVisible, setAlertVisible] = useState(false)
-  const [locationPermissionRequested, setLocationPermissionRequested] = useState(false)
-  const [testMode, setTestMode] = useState(false)
 
-  // Simulated parking spots with coordinates
   const parkingSpots = [
     { id: "1", zoneId: "1", lat: -26.133, lng: 27.938, occupied: false },
     { id: "2", zoneId: "2", lat: -26.134, lng: 27.939, occupied: false },
@@ -50,13 +47,11 @@ export default function ReservationPage() {
     { id: "4", zoneId: "4", lat: -26.136, lng: 27.941, occupied: false },
   ]
 
-  // Lanseria Airport coordinates
   const lanseriaCoords = { lat: -26.133, lng: 27.938 }
 
-  // Function to calculate distance between two coordinates (Haversine formula)
   function getDistance(lat1: number, lng1: number, lat2: number, lng2: number) {
     const toRad = (value: number) => (value * Math.PI) / 180
-    const R = 6371 // km
+    const R = 6371
     const dLat = toRad(lat2 - lat1)
     const dLng = toRad(lng2 - lng1)
     const a =
@@ -67,69 +62,48 @@ export default function ReservationPage() {
   }
 
   useEffect(() => {
-    if (testMode) {
-      // In test mode, simulate user near Lanseria Airport
-      setNearestSpot("1")
-      setAlertVisible(true)
-      return
-    }
-
     if (!navigator.geolocation) {
       setError("Geolocation is not supported by your browser.")
       return
     }
 
-    if (!locationPermissionRequested) {
-      setLocationPermissionRequested(true)
-      navigator.geolocation.getCurrentPosition(
-        () => {
-          // Permission granted, start watching position
-          const watchId = navigator.geolocation.watchPosition(
-            (position) => {
-              const { latitude, longitude } = position.coords
-              setUserLocation({ lat: latitude, lng: longitude })
+    const watchId = navigator.geolocation.watchPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords
+        setUserLocation({ lat: latitude, lng: longitude })
 
-              // Check if user is within 0.5 km of Lanseria Airport
-              const distance = getDistance(latitude, longitude, lanseriaCoords.lat, lanseriaCoords.lng)
-              if (distance <= 0.5) {
-                // Find nearest available spot
-                const availableSpots = parkingSpots.filter((spot) => !spot.occupied)
-                if (availableSpots.length > 0) {
-                  // Find spot with minimum distance to user
-                  let nearest = availableSpots[0]
-                  let minDist = getDistance(latitude, longitude, nearest.lat, nearest.lng)
-                  for (const spot of availableSpots) {
-                    const dist = getDistance(latitude, longitude, spot.lat, spot.lng)
-                    if (dist < minDist) {
-                      nearest = spot
-                      minDist = dist
-                    }
-                  }
-                  setNearestSpot(nearest.id)
-                  setAlertVisible(true)
-                }
-              } else {
-                setAlertVisible(false)
-                setNearestSpot(null)
+        const distance = getDistance(latitude, longitude, lanseriaCoords.lat, lanseriaCoords.lng)
+        if (distance <= 0.5) {
+          const availableSpots = parkingSpots.filter((spot) => !spot.occupied)
+          if (availableSpots.length > 0) {
+            let nearest = availableSpots[0]
+            let minDist = getDistance(latitude, longitude, nearest.lat, nearest.lng)
+            for (const spot of availableSpots) {
+              const dist = getDistance(latitude, longitude, spot.lat, spot.lng)
+              if (dist < minDist) {
+                nearest = spot
+                minDist = dist
               }
-            },
-            (err) => {
-              setError("Failed to get your location.")
-            },
-            { enableHighAccuracy: true, maximumAge: 10000, timeout: 5000 }
-          )
-          return () => navigator.geolocation.clearWatch(watchId)
-        },
-        (err) => {
-          setError("Location permission denied or unavailable.")
+            }
+            setNearestSpot(nearest.id)
+            setAlertVisible(true)
+          }
+        } else {
+          setAlertVisible(false)
+          setNearestSpot(null)
         }
-      )
-    }
-  }, [locationPermissionRequested, testMode])
+      },
+      () => {
+        setError("Failed to get your location.")
+      },
+      { enableHighAccuracy: true, maximumAge: 10000, timeout: 5000 }
+    )
+
+    return () => navigator.geolocation.clearWatch(watchId)
+  }, [])
 
   const handleConfirmParking = () => {
     if (nearestSpot) {
-      // Mark spot as occupied (in real app, update backend)
       const spotIndex = parkingSpots.findIndex((spot) => spot.id === nearestSpot)
       if (spotIndex !== -1) {
         parkingSpots[spotIndex].occupied = true
@@ -155,9 +129,6 @@ export default function ReservationPage() {
   }
 
   if (success) {
-    // Find the parking spot coordinates for the reserved zone
-    const reservedSpot = parkingSpots.find(spot => spot.zoneId === zoneId)
-
     return (
       <div className="min-h-screen bg-white">
         <div className="max-w-2xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
@@ -176,22 +147,6 @@ export default function ReservationPage() {
                 <p className="text-sm text-gray-600">Duration: {formData.duration} hour(s)</p>
                 <p className="text-sm text-gray-600">Total: R${zone.pricePerHour * parseInt(formData.duration)}</p>
               </div>
-
-              {reservedSpot && (
-                <div className="mb-6">
-                  <h3 className="font-medium text-gray-900 mb-2">Directions to your parking spot</h3>
-                  <iframe
-                    title="Parking Directions"
-                    width="100%"
-                    height="300"
-                    frameBorder="0"
-                    style={{ border: 0 }}
-                    src={`https://www.google.com/maps/embed/v1/directions?key=AIzaSyClTA6IxfZUHeK29KH75ZGNYIZwTCLlzfU&origin=${lanseriaCoords.lat},${lanseriaCoords.lng}&destination=${reservedSpot.lat},${reservedSpot.lng}&mode=driving`}
-                    allowFullScreen
-                  />
-                </div>
-              )}
-
               <Button asChild>
                 <a href="/estacionamento">Return to Parking Overview</a>
               </Button>
@@ -210,29 +165,16 @@ export default function ReservationPage() {
           <p className="mt-2 text-gray-600">
             Complete your reservation for {zone.name} ({zone.type})
           </p>
-          <Button
-            variant="secondary"
-            onClick={() => setTestMode(!testMode)}
-            className="mb-6"
-          >
-            {testMode ? "Disable" : "Enable"} Test Mode (Simulate Location)
-          </Button>
         </div>
 
-        {alertVisible && nearestSpot && (
-          <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative mb-6" role="alert">
-            <strong className="font-bold">Alert!</strong>
-            <span className="block sm:inline"> Nearest available parking spot: {nearestSpot}</span>
-            <button
-              onClick={handleConfirmParking}
-              className="ml-4 bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-3 rounded"
-            >
-              Confirm Parking
-            </button>
-          </div>
-        )}
-
         <Card className="p-6">
+          {alertVisible && (
+            <Alert className="mb-4">
+              Nearest spot available: #{nearestSpot}
+              <Button className="ml-4" onClick={handleConfirmParking}>Confirm Spot</Button>
+            </Alert>
+          )}
+
           {error && (
             <Alert variant="destructive" className="mb-6">{error}</Alert>
           )}
@@ -287,23 +229,7 @@ export default function ReservationPage() {
               </Select>
             </div>
 
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <h3 className="font-medium text-gray-900 mb-2">Summary</h3>
-              <div className="space-y-1 text-gray-600">
-                <p>Zone: {zone.name} ({zone.type})</p>
-                <p>Price per hour: R${zone.pricePerHour}</p>
-                <p>Duration: {formData.duration} hour(s)</p>
-                <p className="font-medium text-gray-900 mt-2">
-                  Total: R${zone.pricePerHour * parseInt(formData.duration)}
-                </p>
-              </div>
-            </div>
-
-            <Button 
-              type="submit" 
-              className="w-full"
-              disabled={loading}
-            >
+            <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Processing..." : "Confirm Reservation"}
             </Button>
           </form>
