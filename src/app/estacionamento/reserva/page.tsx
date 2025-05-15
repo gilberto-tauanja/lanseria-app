@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -20,10 +20,10 @@ const parkingZones = {
   "2": { name: "Zone B", type: "Accessible", pricePerHour: 20 },
   "3": { name: "Zone C", type: "Long Term", pricePerHour: 15 },
   "4": { name: "Zone D", type: "Short Term", pricePerHour: 25 }
-}
+};
 
 // Lanseria Airport coordinates
-const lanseriaCoords = { lat: -26.133, lng: 27.938 }
+const lanseriaCoords = { lat: -26.133, lng: 27.938 };
 
 // Simulated parking spots with coordinates
 const parkingSpots = [
@@ -31,132 +31,132 @@ const parkingSpots = [
   { id: "2", zoneId: "2", lat: -26.134, lng: 27.939, occupied: false },
   { id: "3", zoneId: "3", lat: -26.135, lng: 27.940, occupied: false },
   { id: "4", zoneId: "4", lat: -26.136, lng: 27.941, occupied: false },
-]
+];
 
-export default function ReservationPage() {
-  const searchParams = useSearchParams()
-  const zoneId = searchParams.get("zone") || "1"
-  const zone = parkingZones[zoneId as keyof typeof parkingZones]
+function ReservationContent() {
+  const searchParams = useSearchParams();
+  const zoneId = searchParams.get("zone") || "1";
+  const zone = parkingZones[zoneId as keyof typeof parkingZones];
 
   const [formData, setFormData] = useState({
     licensePlate: "",
     duration: "1",
     paymentMethod: "credit"
-  })
-  const [loading, setLoading] = useState(false)
-  const [success, setSuccess] = useState(false)
-  const [error, setError] = useState("")
+  });
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState("");
 
-  const [nearestSpot, setNearestSpot] = useState<string | null>(null)
-  const [alertVisible, setAlertVisible] = useState(false)
-  const [locationPermissionRequested, setLocationPermissionRequested] = useState(false)
-  const [testMode, setTestMode] = useState(false)
+  const [nearestSpot, setNearestSpot] = useState<string | null>(null);
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [locationPermissionRequested, setLocationPermissionRequested] = useState(false);
+  const [testMode, setTestMode] = useState(false);
 
   // Function to calculate distance between two coordinates (Haversine formula)
   const getDistance = useCallback((lat1: number, lng1: number, lat2: number, lng2: number) => {
-    const toRad = (value: number) => (value * Math.PI) / 180
-    const R = 6371 // km
-    const dLat = toRad(lat2 - lat1)
-    const dLng = toRad(lng2 - lng1)
+    const toRad = (value: number) => (value * Math.PI) / 180;
+    const R = 6371; // km
+    const dLat = toRad(lat2 - lat1);
+    const dLng = toRad(lng2 - lng1);
     const a =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) * Math.sin(dLng / 2)
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
-    return R * c
-  }, [])
+      Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  }, []);
 
   const handleLocationUpdate = useCallback((position: GeolocationPosition) => {
-    const { latitude, longitude } = position.coords
+    const { latitude, longitude } = position.coords;
 
     // Check if user is within 0.5 km of Lanseria Airport
-    const distance = getDistance(latitude, longitude, lanseriaCoords.lat, lanseriaCoords.lng)
+    const distance = getDistance(latitude, longitude, lanseriaCoords.lat, lanseriaCoords.lng);
     if (distance <= 0.5) {
       // Find nearest available spot
-      const availableSpots = parkingSpots.filter((spot) => !spot.occupied)
+      const availableSpots = parkingSpots.filter((spot) => !spot.occupied);
       if (availableSpots.length > 0) {
         // Find spot with minimum distance to user
-        let nearest = availableSpots[0]
-        let minDist = getDistance(latitude, longitude, nearest.lat, nearest.lng)
+        let nearest = availableSpots[0];
+        let minDist = getDistance(latitude, longitude, nearest.lat, nearest.lng);
         for (const spot of availableSpots) {
-          const dist = getDistance(latitude, longitude, spot.lat, spot.lng)
+          const dist = getDistance(latitude, longitude, spot.lat, spot.lng);
           if (dist < minDist) {
-            nearest = spot
-            minDist = dist
+            nearest = spot;
+            minDist = dist;
           }
         }
-        setNearestSpot(nearest.id)
-        setAlertVisible(true)
+        setNearestSpot(nearest.id);
+        setAlertVisible(true);
       }
     } else {
-      setAlertVisible(false)
-      setNearestSpot(null)
+      setAlertVisible(false);
+      setNearestSpot(null);
     }
-  }, [getDistance])
+  }, [getDistance]);
 
   useEffect(() => {
     if (testMode) {
       // In test mode, simulate user near Lanseria Airport
-      setNearestSpot("1")
-      setAlertVisible(true)
-      return
+      setNearestSpot("1");
+      setAlertVisible(true);
+      return;
     }
 
     if (!navigator.geolocation) {
-      setError("Geolocation is not supported by your browser.")
-      return
+      setError("Geolocation is not supported by your browser.");
+      return;
     }
 
     if (!locationPermissionRequested) {
-      setLocationPermissionRequested(true)
+      setLocationPermissionRequested(true);
       navigator.geolocation.getCurrentPosition(
         () => {
           // Permission granted, start watching position
           const watchId = navigator.geolocation.watchPosition(
             handleLocationUpdate,
             () => {
-              setError("Failed to get your location.")
+              setError("Failed to get your location.");
             },
             { enableHighAccuracy: true, maximumAge: 10000, timeout: 5000 }
-          )
-          return () => navigator.geolocation.clearWatch(watchId)
+          );
+          return () => navigator.geolocation.clearWatch(watchId);
         },
         () => {
-          setError("Location permission denied or unavailable.")
+          setError("Location permission denied or unavailable.");
         }
-      )
+      );
     }
-  }, [locationPermissionRequested, testMode, handleLocationUpdate])
+  }, [locationPermissionRequested, testMode, handleLocationUpdate]);
 
   const handleConfirmParking = () => {
     if (nearestSpot) {
       // Mark spot as occupied (in real app, update backend)
-      const spotIndex = parkingSpots.findIndex((spot) => spot.id === nearestSpot)
+      const spotIndex = parkingSpots.findIndex((spot) => spot.id === nearestSpot);
       if (spotIndex !== -1) {
-        parkingSpots[spotIndex].occupied = true
+        parkingSpots[spotIndex].occupied = true;
       }
-      setAlertVisible(false)
-      alert("Parking spot confirmed and marked as occupied.")
+      setAlertVisible(false);
+      alert("Parking spot confirmed and marked as occupied.");
     }
-  }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setError("")
+    e.preventDefault();
+    setLoading(true);
+    setError("");
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500))
-      setSuccess(true)
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      setSuccess(true);
     } catch {
-      setError("Failed to process reservation. Please try again.")
+      setError("Failed to process reservation. Please try again.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   if (success) {
     // Find the parking spot coordinates for the reserved zone
-    const reservedSpot = parkingSpots.find(spot => spot.zoneId === zoneId)
+    const reservedSpot = parkingSpots.find(spot => spot.zoneId === zoneId);
 
     return (
       <div className="min-h-screen bg-white">
@@ -199,7 +199,7 @@ export default function ReservationPage() {
           </Card>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -310,5 +310,13 @@ export default function ReservationPage() {
         </Card>
       </div>
     </div>
-  )
+  );
+}
+
+export default function ReservationPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading reservation details...</div>}>
+      <ReservationContent />
+    </Suspense>
+  );
 }
