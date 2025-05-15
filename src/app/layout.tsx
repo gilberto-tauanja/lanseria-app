@@ -1,19 +1,25 @@
-import type { Metadata } from "next"
+"use client"
+
+import { usePathname } from "next/navigation"
 import { Inter } from "next/font/google"
 import "./globals.css"
 
 const inter = Inter({ subsets: ["latin"] })
-
-export const metadata: Metadata = {
-  title: "Lanseria Airport App",
-  description: "Smart airport management system for Lanseria Airport",
-}
 
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const pathname = usePathname()
+
+  function linkClass(href: string) {
+    const baseClass = "inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+    const inactiveClass = "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700"
+    const activeClass = "border-indigo-500 text-gray-900"
+    return pathname === href ? `${baseClass} ${activeClass}` : `${baseClass} ${inactiveClass}`
+  }
+
   return (
     <html lang="en">
       <body className={inter.className}>
@@ -26,19 +32,22 @@ export default function RootLayout({
                     <span className="text-xl font-bold">Lanseria Airport</span>
                   </div>
                   <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-                    <a href="/estacionamento" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                    <a href="/" className={linkClass("/")}>
+                      Home
+                    </a>
+                    <a href="/estacionamento" className={linkClass("/estacionamento")}>
                       Parking
                     </a>
-                    <a href="/voos" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                    <a href="/voos" className={linkClass("/voos")}>
                       Flights
                     </a>
-                    <a href="/passagens" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                    <a href="/passagens" className={linkClass("/passagens")}>
                       Tickets
                     </a>
-                    <a href="/alojamentos" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                    <a href="/alojamentos" className={linkClass("/alojamentos")}>
                       Hotels
                     </a>
-                    <a href="/transfers" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                    <a href="/transfers" className={linkClass("/transfers")}>
                       Transfers
                     </a>
                   </div>
