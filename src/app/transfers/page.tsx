@@ -1,22 +1,30 @@
 'use client';
 
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import { useState } from 'react';
 import { format } from 'date-fns';
 import { Calendar as CalendarIcon } from 'lucide-react';
+
 import { Calendar } from '@/components/ui/calendar';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
-import { useState } from 'react';
 
 const services = ['Airport Pickup', 'Hotel Transfer', 'City Tour'];
-const destinations = ['Maputo', 'Matola', 'Catembe', 'custom']; // Use "custom" instead of empty string
+const destinations = ['Maputo', 'Matola', 'Catembe', 'custom'];
+
+type BookingDetails = {
+  destination: string;
+  date?: Date;
+  time: string;
+  passengers: number;
+};
 
 export default function TransfersPage() {
   const [selectedService, setSelectedService] = useState('');
   const [customDestination, setCustomDestination] = useState('');
-  const [bookingDetails, setBookingDetails] = useState({
+  const [bookingDetails, setBookingDetails] = useState<BookingDetails>({
     destination: '',
     date: undefined,
     time: '',
@@ -94,7 +102,7 @@ export default function TransfersPage() {
           <PopoverContent className="w-auto p-0">
             <Calendar
               mode="single"
-              selected={bookingDetails.date}
+              selected={bookingDetails.date as Date | undefined}
               onSelect={(date) =>
                 setBookingDetails({ ...bookingDetails, date })
               }
@@ -138,9 +146,9 @@ export default function TransfersPage() {
           bookingDetails.destination === 'custom'
             ? encodeURIComponent(customDestination)
             : bookingDetails.destination
-        }&date=${bookingDetails.date ? format(bookingDetails.date, 'yyyy-MM-dd') : ''}&time=${
-          bookingDetails.time
-        }&passengers=${bookingDetails.passengers}`}
+        }&date=${
+          bookingDetails.date ? format(bookingDetails.date, 'yyyy-MM-dd') : ''
+        }&time=${bookingDetails.time}&passengers=${bookingDetails.passengers}`}
       >
         <Button className="w-full mt-4">Continue to Booking</Button>
       </a>
