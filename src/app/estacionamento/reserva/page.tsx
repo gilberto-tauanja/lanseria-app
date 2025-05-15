@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useCallback } from "react"
 import { useSearchParams } from "next/navigation"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -22,6 +22,17 @@ const parkingZones = {
   "4": { name: "Zone D", type: "Short Term", pricePerHour: 25 }
 }
 
+// Lanseria Airport coordinates
+const lanseriaCoords = { lat: -26.133, lng: 27.938 }
+
+// Simulated parking spots with coordinates
+const parkingSpots = [
+  { id: "1", zoneId: "1", lat: -26.133, lng: 27.938, occupied: false },
+  { id: "2", zoneId: "2", lat: -26.134, lng: 27.939, occupied: false },
+  { id: "3", zoneId: "3", lat: -26.135, lng: 27.940, occupied: false },
+  { id: "4", zoneId: "4", lat: -26.136, lng: 27.941, occupied: false },
+]
+
 export default function ReservationPage() {
   const searchParams = useSearchParams()
   const zoneId = searchParams.get("zone") || "1"
@@ -36,25 +47,13 @@ export default function ReservationPage() {
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState("")
 
-  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null)
   const [nearestSpot, setNearestSpot] = useState<string | null>(null)
   const [alertVisible, setAlertVisible] = useState(false)
   const [locationPermissionRequested, setLocationPermissionRequested] = useState(false)
   const [testMode, setTestMode] = useState(false)
 
-  // Simulated parking spots with coordinates
-  const parkingSpots = [
-    { id: "1", zoneId: "1", lat: -26.133, lng: 27.938, occupied: false },
-    { id: "2", zoneId: "2", lat: -26.134, lng: 27.939, occupied: false },
-    { id: "3", zoneId: "3", lat: -26.135, lng: 27.940, occupied: false },
-    { id: "4", zoneId: "4", lat: -26.136, lng: 27.941, occupied: false },
-  ]
-
-  // Lanseria Airport coordinates
-  const lanseriaCoords = { lat: -26.133, lng: 27.938 }
-
   // Function to calculate distance between two coordinates (Haversine formula)
-  function getDistance(lat1: number, lng1: number, lat2: number, lng2: number) {
+  const getDistance = useCallback((lat1: number, lng1: number, lat2: number, lng2: number) => {
     const toRad = (value: number) => (value * Math.PI) / 180
     const R = 6371 // km
     const dLat = toRad(lat2 - lat1)
@@ -64,7 +63,35 @@ export default function ReservationPage() {
       Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) * Math.sin(dLng / 2)
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
     return R * c
-  }
+  }, [])
+
+  const handleLocationUpdate = useCallback((position: GeolocationPosition) => {
+    const { latitude, longitude } = position.coords
+
+    // Check if user is within 0.5 km of Lanseria Airport
+    const distance = getDistance(latitude, longitude, lanseriaCoords.lat, lanseriaCoords.lng)
+    if (distance <= 0.5) {
+      // Find nearest available spot
+      const availableSpots = parkingSpots.filter((spot) => !spot.occupied)
+      if (availableSpots.length > 0) {
+        // Find spot with minimum distance to user
+        let nearest = availableSpots[0]
+        let minDist = getDistance(latitude, longitude, nearest.lat, nearest.lng)
+        for (const spot of availableSpots) {
+          const dist = getDistance(latitude, longitude, spot.lat, spot.lng)
+          if (dist < minDist) {
+            nearest = spot
+            minDist = dist
+          }
+        }
+        setNearestSpot(nearest.id)
+        setAlertVisible(true)
+      }
+    } else {
+      setAlertVisible(false)
+      setNearestSpot(null)
+    }
+  }, [getDistance])
 
   useEffect(() => {
     if (testMode) {
@@ -85,47 +112,20 @@ export default function ReservationPage() {
         () => {
           // Permission granted, start watching position
           const watchId = navigator.geolocation.watchPosition(
-            (position) => {
-              const { latitude, longitude } = position.coords
-              setUserLocation({ lat: latitude, lng: longitude })
-
-              // Check if user is within 0.5 km of Lanseria Airport
-              const distance = getDistance(latitude, longitude, lanseriaCoords.lat, lanseriaCoords.lng)
-              if (distance <= 0.5) {
-                // Find nearest available spot
-                const availableSpots = parkingSpots.filter((spot) => !spot.occupied)
-                if (availableSpots.length > 0) {
-                  // Find spot with minimum distance to user
-                  let nearest = availableSpots[0]
-                  let minDist = getDistance(latitude, longitude, nearest.lat, nearest.lng)
-                  for (const spot of availableSpots) {
-                    const dist = getDistance(latitude, longitude, spot.lat, spot.lng)
-                    if (dist < minDist) {
-                      nearest = spot
-                      minDist = dist
-                    }
-                  }
-                  setNearestSpot(nearest.id)
-                  setAlertVisible(true)
-                }
-              } else {
-                setAlertVisible(false)
-                setNearestSpot(null)
-              }
-            },
-            (err) => {
+            handleLocationUpdate,
+            () => {
               setError("Failed to get your location.")
             },
             { enableHighAccuracy: true, maximumAge: 10000, timeout: 5000 }
           )
           return () => navigator.geolocation.clearWatch(watchId)
         },
-        (err) => {
+        () => {
           setError("Location permission denied or unavailable.")
         }
       )
     }
-  }, [locationPermissionRequested, testMode])
+  }, [locationPermissionRequested, testMode, handleLocationUpdate])
 
   const handleConfirmParking = () => {
     if (nearestSpot) {
@@ -147,7 +147,7 @@ export default function ReservationPage() {
     try {
       await new Promise(resolve => setTimeout(resolve, 1500))
       setSuccess(true)
-    } catch (err) {
+    } catch {
       setError("Failed to process reservation. Please try again.")
     } finally {
       setLoading(false)

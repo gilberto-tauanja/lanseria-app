@@ -1,3 +1,5 @@
+// ./src/app/layout.tsx
+
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
@@ -16,9 +18,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-      </head>
       <body className={inter.className}>
         <div className="min-h-screen bg-white">
           <nav className="border-b">
@@ -29,28 +28,49 @@ export default function RootLayout({
                     <span className="text-xl font-bold">Lanseria Airport</span>
                   </div>
                   <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-                    <a href="/estacionamento" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                    <a
+                      href="/estacionamento"
+                      className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                    >
                       Parking
                     </a>
-                    <a href="/voos" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                    <a
+                      href="/voos"
+                      className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                    >
                       Flights
                     </a>
-                    <a href="/passagens" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                    <a
+                      href="/passagens"
+                      className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                    >
                       Tickets
                     </a>
-                    <a href="/alojamentos" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                    <a
+                      href="/alojamentos"
+                      className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                    >
                       Hotels
                     </a>
-                    <a href="/transfers" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                    <a
+                      href="/transfers"
+                      className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                    >
                       Transfers
                     </a>
                   </div>
                 </div>
                 <div className="hidden sm:ml-6 sm:flex sm:items-center">
-                  <a href="/usuario" className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium">
+                  <a
+                    href="/usuario"
+                    className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium"
+                  >
                     Profile
                   </a>
-                  <a href="/suporte" className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium">
+                  <a
+                    href="/suporte"
+                    className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium"
+                  >
                     Support
                   </a>
                 </div>
@@ -63,3 +83,4 @@ export default function RootLayout({
     </html>
   )
 }
+

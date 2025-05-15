@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Image from "next/image"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -93,7 +94,7 @@ export default function HotelsPage() {
       <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900">
-            Hotels & Resorts
+            Hotels &amp; Resorts
           </h1>
           <p className="mt-2 text-gray-600">
             Find perfect accommodation near Lanseria Airport
@@ -168,9 +169,11 @@ export default function HotelsPage() {
           {filteredHotels.map((hotel) => (
             <Card key={hotel.id} className="overflow-hidden">
               <div className="aspect-w-16 aspect-h-9">
-                <img
+                <Image
                   src={hotel.image}
                   alt={hotel.name}
+                  width={400}
+                  height={300}
                   className="object-cover w-full h-48"
                 />
               </div>

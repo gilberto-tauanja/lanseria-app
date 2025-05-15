@@ -1,12 +1,12 @@
 "use client"
 
 import { useState } from "react"
+import Image from "next/image"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
   Tabs,
-  TabsContent,
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs"
@@ -168,13 +168,13 @@ export default function ComercioPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredShops.map((shop) => (
             <Card key={shop.id} className="overflow-hidden">
-            <div className="aspect-w-16 aspect-h-9">
+              <div className="aspect-w-16 aspect-h-9">
                 <Image
                   src={shop.image}
                   alt={shop.name}
+                  width={400}
+                  height={300}
                   className="object-cover w-full h-48"
-                  width={640}
-                  height={360}
                 />
               </div>
               <div className="p-6">
