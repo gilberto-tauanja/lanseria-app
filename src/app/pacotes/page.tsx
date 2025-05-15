@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Image from "next/image"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import {
@@ -200,9 +201,11 @@ export default function TourPackagesPage() {
           {filteredPackages.map((pkg) => (
             <Card key={pkg.id} className="overflow-hidden flex flex-col">
               <div className="aspect-w-16 aspect-h-9">
-                <img
+                <Image
                   src={pkg.image}
                   alt={pkg.name}
+                  width={640}  // Example width that matches your aspect ratio
+                  height={360} // 16:9 ratio (640/360 = 16/9)
                   className="object-cover w-full h-48"
                 />
               </div>
@@ -232,7 +235,7 @@ export default function TourPackagesPage() {
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
                       ${pkg.availability === "High" ? "bg-green-100 text-green-800" :
                         pkg.availability === "Medium" ? "bg-yellow-100 text-yellow-800" :
-                        "bg-red-100 text-red-800"}`}>
+                          "bg-red-100 text-red-800"}`}>
                       {pkg.availability} Availability
                     </span>
                   </div>

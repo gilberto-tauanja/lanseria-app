@@ -82,8 +82,8 @@ export default function ParkingPage() {
                     </div>
                   </div>
                   <div className="mt-4 flex-grow flex items-end">
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       className="w-full"
                       asChild
                     >
@@ -121,11 +121,12 @@ export default function ParkingPage() {
                 </h3>
                 <ol className="space-y-2 text-sm text-gray-500 list-decimal list-inside">
                   <li>Select your preferred parking zone</li>
-                  <li>Click "Reserve Spot" to proceed</li>
+                  <li>Click &quot;Reserve Spot&quot; to proceed</li>
                   <li>Enter your vehicle details and duration</li>
                   <li>Complete payment to confirm your spot</li>
                   <li>Use the confirmation QR code at entry</li>
                 </ol>
+
               </div>
             </div>
           </div>
