@@ -126,7 +126,6 @@ export default function ParkingPage() {
                   <li>Complete payment to confirm your spot</li>
                   <li>Use the confirmation QR code at entry</li>
                 </ol>
-
               </div>
             </div>
           </div>
