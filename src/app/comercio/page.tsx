@@ -168,11 +168,13 @@ export default function ComercioPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredShops.map((shop) => (
             <Card key={shop.id} className="overflow-hidden">
-              <div className="aspect-w-16 aspect-h-9">
-                <img
+            <div className="aspect-w-16 aspect-h-9">
+                <Image
                   src={shop.image}
                   alt={shop.name}
                   className="object-cover w-full h-48"
+                  width={640}
+                  height={360}
                 />
               </div>
               <div className="p-6">
