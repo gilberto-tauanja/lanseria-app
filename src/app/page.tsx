@@ -1,6 +1,8 @@
+"use client"
 
 import { Card } from "../components/ui/card"
 import { Button } from "../components/ui/button"
+import Image from "next/image"
 import * as React from "react"
 
 const previousCards = [
@@ -156,7 +158,15 @@ export default function Home() {
             {previousCards.map((card, idx) => (
               <Card key={idx} className="min-w-[180px] flex-shrink-0 p-4 text-center cursor-pointer hover:shadow-md transition-shadow">
                 <a href={card.href} className="block">
-                  <img src={card.imgSrc} alt={card.title} className="mx-auto mb-2 h-18 w-50 object-contain" />
+                  <div className="relative h-32 w-full mb-2">
+                    <Image 
+                      src={card.imgSrc} 
+                      alt={card.title} 
+                      fill
+                      className="object-contain"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    />
+                  </div>
                   <h3 className="text-lg font-medium text-gray-900">{card.title}</h3>
                   <p className="text-sm text-gray-600">{card.description}</p>
                 </a>

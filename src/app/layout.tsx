@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation"
 import { Inter } from "next/font/google"
 import "./globals.css"
 import { useState, useEffect } from "react"
+import Image from "next/image"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -81,7 +82,13 @@ export default function RootLayout({
                 <div className="max-w-7xl mx-auto px-4 flex justify-between">
                   {navItems.concat(mobileUserItems).map(({ href, label, imgSrc }) => (
                     <a key={href} href={href} className={mobileLinkClass(href)}>
-                      <img src={imgSrc} alt={label} className="w-6 h-6 mb-1" />
+                      <Image 
+                        src={imgSrc} 
+                        alt={label} 
+                        width={24} 
+                        height={24} 
+                        className="mb-1"
+                      />
                       {label}
                     </a>
                   ))}
