@@ -19,6 +19,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import Link from "next/link"
+import { HelpCircle } from "lucide-react"
 
 interface Booking {
   id: string
@@ -117,26 +119,38 @@ export default function UserProfilePage() {
 
   const handleUpdateProfile = (e: React.FormEvent) => {
     e.preventDefault()
-    // Simulate profile update
     alert("Profile updated successfully!")
   }
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">
-            My Profile
-          </h1>
-          <p className="mt-2 text-gray-600">
-            Manage your account, bookings, and preferences
-          </p>
+      <div className="max-w-7xl mx-auto py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
+        {/* Header with title and support link */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+              My Profile
+            </h1>
+            <p className="mt-1 text-sm sm:text-base text-gray-600">
+              Manage your account, bookings, and preferences
+            </p>
+          </div>
+          
+          {/* Support link with icon and text below */}
+          <Link 
+            href="/suporte" 
+            className="flex flex-col items-center justify-center gap-1 px-4 py-2 rounded-md text-gray-700 hover:bg-gray-100 transition-colors"
+          >
+            <HelpCircle className="w-6 h-6" />
+            <span className="text-sm">Support</span>
+          </Link>
         </div>
 
+        {/* Main content area with tabs */}
         <Tabs defaultValue="bookings" className="space-y-6">
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="bookings">Bookings</TabsTrigger>
-            <TabsTrigger value="loyalty">Loyalty Points</TabsTrigger>
+            <TabsTrigger value="loyalty">Loyalty</TabsTrigger>
             <TabsTrigger value="profile">Profile</TabsTrigger>
             <TabsTrigger value="preferences">Preferences</TabsTrigger>
           </TabsList>
@@ -160,10 +174,10 @@ export default function UserProfilePage() {
                   <TableBody>
                     {mockBookings.map((booking) => (
                       <TableRow key={booking.id}>
-                        <TableCell>{booking.type}</TableCell>
-                        <TableCell>{booking.date}</TableCell>
+                        <TableCell className="font-medium">{booking.type}</TableCell>
+                        <TableCell>{new Date(booking.date).toLocaleDateString()}</TableCell>
                         <TableCell>{booking.details}</TableCell>
-                        <TableCell>{booking.reference}</TableCell>
+                        <TableCell className="font-mono">{booking.reference}</TableCell>
                         <TableCell>
                           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
                             ${booking.status === "Upcoming" ? "bg-green-100 text-green-800" :
@@ -172,10 +186,10 @@ export default function UserProfilePage() {
                             {booking.status}
                           </span>
                         </TableCell>
-                        <TableCell>R${booking.price}</TableCell>
+                        <TableCell>R${booking.price.toLocaleString()}</TableCell>
                         <TableCell>
                           <Button variant="outline" size="sm" asChild>
-                            <a href={`/bookings/${booking.id}`}>View Details</a>
+                            <Link href={`/bookings/${booking.id}`}>View</Link>
                           </Button>
                         </TableCell>
                       </TableRow>
@@ -193,14 +207,14 @@ export default function UserProfilePage() {
                   <h2 className="text-xl font-semibold text-gray-900">Loyalty Status</h2>
                   <div className="p-4 bg-gray-50 rounded-lg">
                     <div className="text-3xl font-bold text-gray-900 mb-2">
-                      {mockLoyalty.total} points
+                      {mockLoyalty.total.toLocaleString()} points
                     </div>
                     <div className="text-sm text-gray-600">
                       {mockLoyalty.level} Member
                     </div>
                     <div className="mt-4">
                       <div className="text-sm text-gray-600 mb-1">
-                        {mockLoyalty.nextLevel - mockLoyalty.total} points to next level
+                        {(mockLoyalty.nextLevel - mockLoyalty.total).toLocaleString()} points to next level
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-2">
                         <div
@@ -219,9 +233,11 @@ export default function UserProfilePage() {
                       <div key={index} className="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
                         <div>
                           <div className="font-medium">{entry.description}</div>
-                          <div className="text-sm text-gray-500">{entry.date}</div>
+                          <div className="text-sm text-gray-500">
+                            {new Date(entry.date).toLocaleDateString()}
+                          </div>
                         </div>
-                        <div className="text-green-600 font-medium">+{entry.points} points</div>
+                        <div className="text-green-600 font-medium">+{entry.points.toLocaleString()} points</div>
                       </div>
                     ))}
                   </div>
@@ -264,7 +280,9 @@ export default function UserProfilePage() {
                   />
                 </div>
 
-                <Button type="submit">Update Profile</Button>
+                <Button type="submit" className="w-full sm:w-auto">
+                  Update Profile
+                </Button>
               </form>
             </Card>
           </TabsContent>
@@ -279,6 +297,7 @@ export default function UserProfilePage() {
                   </div>
                   <Button
                     variant={userProfile.preferences.newsletter ? "default" : "outline"}
+                    size="sm"
                     onClick={() => setUserProfile({
                       ...userProfile,
                       preferences: {
@@ -298,6 +317,7 @@ export default function UserProfilePage() {
                   </div>
                   <Button
                     variant={userProfile.preferences.notifications ? "default" : "outline"}
+                    size="sm"
                     onClick={() => setUserProfile({
                       ...userProfile,
                       preferences: {
