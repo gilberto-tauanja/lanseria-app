@@ -2,16 +2,16 @@
 
 import { useState } from "react"
 import Image from "next/image"
-import { Card } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import { Card } from "../../components/ui/card"
+import { Button } from "../../components/ui/button"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Label } from "@/components/ui/label"
+} from "../../components/ui/select"
+import { Label } from "../../components/ui/label"
 
 interface TourPackage {
   id: string
@@ -146,7 +146,7 @@ export default function TourPackagesPage() {
               <Label>Type</Label>
               <Select
                 value={filters.type}
-                onValueChange={(value) => setFilters({ ...filters, type: value })}
+                onValueChange={(value: string) => setFilters({ ...filters, type: value })}
               >
                 <SelectTrigger className="mt-1">
                   <SelectValue placeholder="Select type" />
@@ -164,7 +164,7 @@ export default function TourPackagesPage() {
               <Label>Duration</Label>
               <Select
                 value={filters.duration}
-                onValueChange={(value) => setFilters({ ...filters, duration: value })}
+                onValueChange={(value: string) => setFilters({ ...filters, duration: value })}
               >
                 <SelectTrigger className="mt-1">
                   <SelectValue placeholder="Select duration" />
@@ -181,16 +181,16 @@ export default function TourPackagesPage() {
               <Label>Price Range</Label>
               <Select
                 value={filters.priceRange}
-                onValueChange={(value) => setFilters({ ...filters, priceRange: value })}
+                onValueChange={(value: string) => setFilters({ ...filters, priceRange: value })}
               >
                 <SelectTrigger className="mt-1">
                   <SelectValue placeholder="Select price range" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Prices</SelectItem>
-                  <SelectItem value="0-1000">Under R$1,000</SelectItem>
-                  <SelectItem value="1000-2000">R$1,000 - R$2,000</SelectItem>
-                  <SelectItem value="2000-5000">R$2,000+</SelectItem>
+                  <SelectItem value="0-1000">Under R1,000</SelectItem>
+                  <SelectItem value="1000-2000">R1,000 - R2,000</SelectItem>
+                  <SelectItem value="2000-5000">R2,000+</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -204,8 +204,8 @@ export default function TourPackagesPage() {
                 <Image
                   src={pkg.image}
                   alt={pkg.name}
-                  width={640}  // Example width that matches your aspect ratio
-                  height={360} // 16:9 ratio (640/360 = 16/9)
+                  width={640}
+                  height={360}
                   className="object-cover w-full h-48"
                 />
               </div>
@@ -244,7 +244,7 @@ export default function TourPackagesPage() {
               <div className="p-6 border-t bg-gray-50">
                 <div className="flex justify-between items-center">
                   <div>
-                    <span className="text-2xl font-bold text-gray-900">R${pkg.price}</span>
+                    <span className="text-2xl font-bold text-gray-900">R{pkg.price}</span>
                     <span className="text-sm text-gray-500">/person</span>
                   </div>
                   <Button asChild>

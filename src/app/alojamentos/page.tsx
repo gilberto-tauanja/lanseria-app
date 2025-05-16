@@ -2,17 +2,17 @@
 
 import { useState } from "react"
 import Image from "next/image"
-import { Card } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { Card } from "../../components/ui/card"
+import { Button } from "../../components/ui/button"
+import { Input } from "../../components/ui/input"
+import { Label } from "../../components/ui/label"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "../../components/ui/select"
 
 interface Hotel {
   id: string
@@ -129,7 +129,7 @@ export default function HotelsPage() {
               <Label htmlFor="guests">Guests</Label>
               <Select
                 value={searchDates.guests}
-                onValueChange={(value) => setSearchDates({ ...searchDates, guests: value })}
+                onValueChange={(value: string) => setSearchDates({ ...searchDates, guests: value })}
               >
                 <SelectTrigger className="mt-1">
                   <SelectValue placeholder="Select guests" />
@@ -148,17 +148,17 @@ export default function HotelsPage() {
               <Label htmlFor="priceRange">Price Range</Label>
               <Select
                 value={filters.priceRange}
-                onValueChange={(value) => setFilters({ ...filters, priceRange: value })}
+                onValueChange={(value: string) => setFilters({ ...filters, priceRange: value })}
               >
                 <SelectTrigger className="mt-1">
                   <SelectValue placeholder="Select price range" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Prices</SelectItem>
-                  <SelectItem value="0-1000">Under R$1,000</SelectItem>
-                  <SelectItem value="1000-2000">R$1,000 - R$2,000</SelectItem>
-                  <SelectItem value="2000-3000">R$2,000 - R$3,000</SelectItem>
-                  <SelectItem value="3000-999999">R$3,000+</SelectItem>
+                  <SelectItem value="0-1000">Under R1,000</SelectItem>
+                  <SelectItem value="1000-2000">R1,000 - R2,000</SelectItem>
+                  <SelectItem value="2000-3000">R2,000 - R3,000</SelectItem>
+                  <SelectItem value="3000-999999">R3,000+</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -209,7 +209,7 @@ export default function HotelsPage() {
                 </div>
                 <div className="flex justify-between items-center">
                   <div className="text-lg font-bold text-gray-900">
-                    R${hotel.pricePerNight}
+                    R{hotel.pricePerNight}
                     <span className="text-sm font-normal text-gray-500">/night</span>
                   </div>
                   <Button asChild>

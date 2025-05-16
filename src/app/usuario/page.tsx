@@ -1,16 +1,16 @@
 "use client"
 
 import { useState } from "react"
-import { Card } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { Card } from "../../components/ui/card"
+import { Button } from "../../components/ui/button"
+import { Input } from "../../components/ui/input"
+import { Label } from "../../components/ui/label"
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
-} from "@/components/ui/tabs"
+} from "../../components/ui/tabs"
 import {
   Table,
   TableBody,
@@ -18,7 +18,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "../../components/ui/table"
 import Link from "next/link"
 import { HelpCircle } from "lucide-react"
 
@@ -186,7 +186,7 @@ export default function UserProfilePage() {
                             {booking.status}
                           </span>
                         </TableCell>
-                        <TableCell>R${booking.price.toLocaleString()}</TableCell>
+                        <TableCell>R{booking.price.toLocaleString()}</TableCell>
                         <TableCell>
                           <Button variant="outline" size="sm" asChild>
                             <Link href={`/bookings/${booking.id}`}>View</Link>
